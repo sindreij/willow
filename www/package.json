@@ -1,0 +1,20 @@
+{
+  "name": "rusty-elm-www",
+  "version": "0.0.1",
+  "description": "Hello elm",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "bin": {
+    "create-wasm-app": ".bin/create-wasm-app.js"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server"
+  },
+  "devDependencies": {
+    "webpack": "^4.16.3",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5",
+    "copy-webpack-plugin": "^4.5.2"
+  }
+}
