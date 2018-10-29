@@ -13,8 +13,8 @@ pub enum Html<Msg> {
 
 #[derive(Clone, Debug)]
 pub struct Event<Msg> {
-    typ: String,
-    message: Msg,
+    pub type_: String,
+    pub message: Msg,
 }
 
 pub fn div<Msg: Clone>(attrs: &[Event<Msg>], children: &[Html<Msg>]) -> Html<Msg> {
@@ -39,7 +39,7 @@ pub fn text<Msg>(inner: &str) -> Html<Msg> {
 
 pub fn on_click<Msg>(message: Msg) -> Event<Msg> {
     Event {
-        typ: "click".to_owned(),
+        type_: "click".to_owned(),
         message,
     }
 }

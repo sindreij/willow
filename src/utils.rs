@@ -1,4 +1,5 @@
 use cfg_if::cfg_if;
+use wasm_bindgen::prelude::*;
 
 cfg_if! {
     // When the `console_error_panic_hook` feature is enabled, we can call the
@@ -14,4 +15,14 @@ cfg_if! {
         #[inline]
         pub fn set_panic_hook() {}
     }
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn log(a: &str);
+}
+
+macro_rules! console_log {
+    ($($t:tt)*) => (crate::utils::log(&format_args!($($t)*).to_string()))
 }

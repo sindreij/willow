@@ -1,7 +1,14 @@
+#![feature(arbitrary_self_types)]
+
 mod app;
 mod elm;
+#[macro_use]
 mod utils;
+mod program;
 mod render;
+
+// use std::mem;
+use std::rc::Rc;
 
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
@@ -17,26 +24,18 @@ cfg_if! {
 }
 
 #[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(a: &str);
-}
-
-macro_rules! console_log {
-    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
-}
-
-#[wasm_bindgen]
 pub fn main() {
-    let model = app::init();
+    let program = Rc::new(app::main());
+    program.start();
+    // mem::forget(program);
 
-    let tree = app::view(&model);
+    // let model = app::init();
 
+    // let tree = app::view(&model);
 
+    // console_log!("View: {:#?}", tree);
 
-    console_log!("View: {:#?}", tree);
-
-    if let Err(err) = render::render(&tree) {
-        console_log!("Got error: {:?}", err);
-    }
+    // if let Err(err) = render::render(&tree) {
+    //     console_log!("Got error: {:?}", err);
+    // }
 }
