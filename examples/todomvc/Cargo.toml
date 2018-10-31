@@ -1,5 +1,5 @@
 [package]
-name = "example-counter"
+name = "example-todomvc"
 version = "0.1.0"
 authors = ["Sindre Johansen <sindre@sindre.me>"]
 edition = "2018"

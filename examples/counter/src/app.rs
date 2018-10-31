@@ -1,5 +1,6 @@
 use ded::{
-    html::{button, div, on_click, text, Html},
+    events::on_click,
+    html::{button, div, text, Html},
     Program,
 };
 

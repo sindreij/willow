@@ -6,6 +6,8 @@ edition = "2018"
 
 [dependencies]
 wasm-bindgen = {version="0.2", features=["nightly"]}
+js-sys = "0.3.4"
+derivative = "1.0.1"
 
 [dependencies.web-sys]
 version="0.3.2"
@@ -14,9 +16,13 @@ features = [
   'Text',
   'Element',
   'HtmlElement',
+  'HtmlInputElement',
   'Node',
   'Window',
   'EventListener',
   'EventTarget',
+  'Event',
+  'KeyboardEvent',
   'MouseEvent',
+  'CssStyleDeclaration',
 ]

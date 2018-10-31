@@ -1,7 +1,8 @@
 [workspace]
 members = [
+    "ded",
     "examples/counter",
-    "ded"
+    "examples/todomvc",
 ]
 
 [replace]

@@ -1,6 +1,6 @@
+use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
-use std::cell::RefCell;
 
 use crate::{html::Html, render};
 
@@ -40,7 +40,7 @@ where
     pub fn render(self: &Rc<Self>) {
         let tree = (self.view)(&self.current_model.borrow());
 
-        console_log!("View: {:#?}", tree);
+        // console_log!("View: {:#?}", tree);
 
         if let Err(err) = render::render(self, &tree) {
             console_log!("Got error: {:?}", err);
