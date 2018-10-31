@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use crate::{elm::Html, render};
+use crate::{html::Html, render};
 
 pub struct Program<Model, Msg> {
     pub view: Box<Fn(&Model) -> Html<Msg>>,

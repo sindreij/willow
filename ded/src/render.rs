@@ -5,7 +5,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{Document, MouseEvent, Node, Element};
 
-use crate::{elm::Html, program::Program};
+use crate::{html::Html, program::Program};
 
 pub fn render<Msg: Debug + Clone + 'static, Model: Clone + 'static>(
     program: &Rc<Program<Model, Msg>>,

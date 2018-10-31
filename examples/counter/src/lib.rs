@@ -1,11 +1,8 @@
 #![feature(arbitrary_self_types)]
 
 mod app;
-mod elm;
 #[macro_use]
 mod utils;
-mod program;
-mod render;
 
 // use std::mem;
 use std::rc::Rc;

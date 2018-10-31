@@ -1,0 +1,22 @@
+[package]
+name = "ded"
+version = "0.1.0"
+authors = ["Sindre Johansen <sindreij@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+wasm-bindgen = {version="0.2", features=["nightly"]}
+
+[dependencies.web-sys]
+version="0.3.2"
+features = [
+  'Document',
+  'Text',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+  'EventListener',
+  'EventTarget',
+  'MouseEvent',
+]

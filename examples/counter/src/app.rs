@@ -1,6 +1,6 @@
-use crate::{
-    elm::{button, div, on_click, text, Html},
-    program::Program,
+use ded::{
+    html::{button, div, on_click, text, Html},
+    Program,
 };
 
 #[derive(Debug, Clone)]
