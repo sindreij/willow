@@ -60,6 +60,11 @@ create_node!(input);
 create_node!(label);
 create_node!(ul);
 create_node!(li);
+create_node!(footer);
+create_node!(span);
+create_node!(strong);
+create_node!(a);
+create_node!(p);
 
 pub fn text<Msg>(inner: &str) -> Html<Msg> {
     Html::Text(inner.to_owned())

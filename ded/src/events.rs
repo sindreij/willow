@@ -13,6 +13,25 @@ pub fn on_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     }
 }
 
+pub fn on_double_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
+    Attribute::Event {
+        type_: "dblclick".to_owned(),
+        to_message: Rc::new(move |_| Some(message.clone())),
+        stop_propagation: false,
+        prevent_default: false,
+    }
+}
+
+pub fn on_blur<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
+    Attribute::Event {
+        type_: "blur".to_owned(),
+        to_message: Rc::new(move |_| Some(message.clone())),
+        stop_propagation: false,
+        prevent_default: false,
+    }
+}
+
+// TODO: Ensure that when we start using animationFrame, on_input gets special treatement
 pub fn on_input<Msg: 'static>(message: impl Fn(String) -> Msg + 'static + Clone) -> Attribute<Msg> {
     Attribute::Event {
         type_: "input".to_owned(),

@@ -1,19 +1,23 @@
 use ded::{
     attributes::{
-        autofocus, checked, class, classList, for_, name, placeholder, style, type_, value,
+        autofocus, checked, class, class_list, for_, id, name, placeholder, style, type_, value, hidden, href,
     },
-    events::{on_click, on_enter, on_input},
-    html::{div, h1, header, input, label, li, section, text, ul, Html, button},
+    events::{on_blur, on_click, on_double_click, on_enter, on_input},
+    html::{button, div, h1, header, input, label, li, section, text, ul, Html, footer, span, strong, a, p},
     Program,
 };
 
 #[derive(Debug, Clone)]
 pub enum Msg {
     UpdateField(String),
+    UpdateEntry(i32, String),
+    EditingEntry(i32, bool),
     Add,
     CheckAll(bool),
     Check(i32, bool),
     Delete(i32),
+    ChangeVisibility(&'static str),
+    DeleteCompleted,
 }
 
 #[derive(Debug, Clone)]
@@ -71,6 +75,26 @@ fn update(msg: &Msg, mut model: Model) -> Model {
         Msg::Delete(id) => {
             model.entries.retain(|entry| entry.id != *id);
         }
+        Msg::UpdateEntry(id, task) => {
+            for entry in &mut model.entries {
+                if entry.id == *id {
+                    entry.description = task.to_owned();
+                }
+            }
+        }
+        Msg::EditingEntry(id, is_editing) => {
+            for entry in &mut model.entries {
+                if entry.id == *id {
+                    entry.editing = *is_editing;
+                }
+            }
+        }
+        Msg::ChangeVisibility(visibility) => {
+            model.visibility = visibility.to_string();
+        }
+        Msg::DeleteCompleted => {
+            model.entries.retain(|entry| !entry.completed)
+        }
     }
     model
 }
@@ -78,14 +102,17 @@ fn update(msg: &Msg, mut model: Model) -> Model {
 fn view(model: &Model) -> Html<Msg> {
     div(
         &[class("todomvc-wrapper"), style("visibility", "hidden")],
-        &[section(
-            &[class("todoapp")],
-            &[
-                view_input(&model.field),
-                view_entries(&model.visibility, &model.entries),
-                view_controls(&model.visibility, &model.entries),
-            ],
-        )],
+        &[
+            section(
+                &[class("todoapp")],
+                &[
+                    view_input(&model.field),
+                    view_entries(&model.visibility, &model.entries),
+                    view_controls(&model.visibility, &model.entries),
+                ],
+            ),
+            info_footer(),
+        ],
     )
 }
 
@@ -135,39 +162,150 @@ fn view_entries(visibility: &String, entries: &Vec<Entry>) -> Html<Msg> {
             label(&[for_("toggle-all")], &[text("Mark all as complete")]),
             ul(
                 &[class("todo-list")],
-                &entries.iter().map(view_entry).collect::<Vec<_>>(),
+                &entries
+                    .iter()
+                    .filter(|entry| match visibility.as_str() {
+                        "Completed" => entry.completed,
+                        "Active" => !entry.completed,
+                        _ => true,
+                    })
+                    .map(view_entry)
+                    .collect::<Vec<_>>(),
             ),
         ],
     )
 }
 
 fn view_entry(todo: &Entry) -> Html<Msg> {
+    let todo_id = todo.id;
     li(
-        &[classList(&[
+        &[class_list(&[
             ("completed", todo.completed),
             ("editing", todo.editing),
         ])],
-        &[div(
-            &[class("view")],
+        &[
+            div(
+                &[class("view")],
+                &[
+                    input(
+                        &[
+                            class("toggle"),
+                            type_("checkbox"),
+                            checked(todo.completed),
+                            on_click(Msg::Check(todo.id, !todo.completed)),
+                        ],
+                        &[],
+                    ),
+                    label(
+                        &[on_double_click(Msg::EditingEntry(todo.id, true))],
+                        &[text(&todo.description)],
+                    ),
+                    button(&[class("destroy"), on_click(Msg::Delete(todo.id))], &[]),
+                ],
+            ),
+            input(
+                &[
+                    class("edit"),
+                    value(&todo.description),
+                    name("title"),
+                    id(&format!("todo-{}", todo.id.to_string())),
+                    on_input(move |val| Msg::UpdateEntry(todo_id, val)),
+                    on_blur(Msg::EditingEntry(todo.id, false)),
+                    on_enter(Msg::EditingEntry(todo.id, false)),
+                ],
+                &[],
+            ),
+        ],
+    )
+}
+
+fn view_controls(visibility: &String, entries: &Vec<Entry>) -> Html<Msg> {
+    let entries_completed = entries.iter().filter(|e| e.completed).count();
+    let entries_left = entries.len() - entries_completed;
+
+    footer(
+        &[class("footer"), hidden(entries.is_empty())],
+        &[
+            view_controls_count(entries_left),
+            view_controls_filters(visibility),
+            view_controls_clear(entries_completed),
+        ],
+    )
+}
+
+fn view_controls_count(entries_left: usize) -> Html<Msg> {
+    let item_ = if entries_left == 1 { " item" } else { " items" };
+
+    span(
+        &[class("todo-count")],
+        &[
+            strong(&[], &[text(&entries_left.to_string())]),
+            text(&format!("{} left", item_)),
+        ],
+    )
+}
+
+fn view_controls_filters(visibility: &str) -> Html<Msg> {
+    ul(
+        &[class("filters")],
+        &[
+            visibility_swap("#/", "All", visibility),
+            text(" "),
+            visibility_swap("#/active", "Active", visibility),
+            text(" "),
+            visibility_swap("#/completed", "Completed", visibility),
+        ],
+    )
+}
+
+fn visibility_swap(uri: &str, visibility: &'static str, actual_visibility: &str) -> Html<Msg> {
+    li(
+        &[on_click(Msg::ChangeVisibility(visibility))],
+        &[a(
             &[
-                input(
-                    &[
-                        class("toggle"),
-                        type_("checkbox"),
-                        checked(todo.completed),
-                        on_click(Msg::Check(todo.id, !todo.completed)),
-                    ],
-                    &[],
-                ),
-                label(&[], &[text(&todo.description)]),
-                button(&[class("destroy"), on_click(Msg::Delete(todo.id))], &[]),
+                href(uri),
+                class_list(&[("selected", visibility == actual_visibility)]),
             ],
+            &[text(visibility)],
         )],
     )
 }
 
-fn view_controls(visibility: &String, entires: &Vec<Entry>) -> Html<Msg> {
-    div(&[], &[])
+fn view_controls_clear(entries_completed: usize) -> Html<Msg> {
+    button(
+        &[
+            class("clear-completed"),
+            hidden(entries_completed == 0),
+            on_click(Msg::DeleteCompleted),
+        ],
+        &[text(&format!("Clear completed ({})", entries_completed))],
+    )
+}
+
+fn info_footer() -> Html<Msg> {
+    footer(
+        &[class("info")],
+        &[
+            p(&[], &[text("Double-click to edit a todo")]),
+            p(
+                &[],
+                &[
+                    text("Written by "),
+                    a(
+                        &[href("https://github.com/sindreij")],
+                        &[text("Sindre Johansen")],
+                    ),
+                ],
+            ),
+            p(
+                &[],
+                &[
+                    text("Part of "),
+                    a(&[href("http://todomvc.com")], &[text("TodoMVC")]),
+                ],
+            ),
+        ],
+    )
 }
 
 pub fn main() -> Program<Model, Msg> {

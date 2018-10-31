@@ -26,8 +26,12 @@ pub fn style<Msg>(property: &str, value: &str) -> Attribute<Msg> {
     Attribute::Style(property.to_owned(), value.to_owned())
 }
 
-pub fn classList<Msg>(classes: &[(&str, bool)]) -> Attribute<Msg> {
-    let active = classes.iter().filter(|(name, active)| *active ).map(|(name, _active)| *name).collect::<Vec<_>>();
+pub fn class_list<Msg>(classes: &[(&str, bool)]) -> Attribute<Msg> {
+    let active = classes
+        .iter()
+        .filter(|(_, active)| *active)
+        .map(|(name, _)| *name)
+        .collect::<Vec<_>>();
 
     console_log!("active: {:?}", active);
 
@@ -38,9 +42,12 @@ pub fn classList<Msg>(classes: &[(&str, bool)]) -> Attribute<Msg> {
 string_property!(placeholder);
 string_property!(name);
 string_property!(value);
+string_property!(id);
+string_property!(href);
 string_property!(class, "className");
 string_property!(type_, "type");
 string_property!(for_, "htmlFor");
 
 bool_property!(autofocus);
 bool_property!(checked);
+bool_property!(hidden);
