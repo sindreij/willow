@@ -45,13 +45,13 @@ fn init() -> Model {
     }
 }
 
-fn update(msg: &Msg, mut model: Model) -> Model {
+fn update(msg: &Msg, model: &mut Model) {
     match msg {
         Msg::UpdateField(val) => model.field = val.to_owned(),
         Msg::Add => {
             if !model.field.is_empty() {
                 model.entries.push(Entry {
-                    description: model.field,
+                    description: model.field.clone(),
                     completed: false,
                     editing: false,
                     id: model.uid,
@@ -96,7 +96,6 @@ fn update(msg: &Msg, mut model: Model) -> Model {
             model.entries.retain(|entry| !entry.completed)
         }
     }
-    model
 }
 
 fn view(model: &Model) -> Html<Msg> {

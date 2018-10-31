@@ -6,7 +6,7 @@ use crate::{html::Html, render};
 
 pub struct Program<Model, Msg> {
     pub view: Box<Fn(&Model) -> Html<Msg>>,
-    pub update: Box<Fn(&Msg, Model) -> Model>,
+    pub update: Box<Fn(&Msg, &mut Model)>,
     pub current_model: RefCell<Model>,
 }
 
@@ -18,7 +18,7 @@ where
     pub fn new<ViewFn, UpdateFn>(view: ViewFn, update: UpdateFn, initial: Model) -> Self
     where
         ViewFn: Fn(&Model) -> Html<Msg> + 'static,
-        UpdateFn: Fn(&Msg, Model) -> Model + 'static,
+        UpdateFn: Fn(&Msg, &mut Model) + 'static,
     {
         Self {
             view: Box::new(view),
@@ -28,11 +28,11 @@ where
     }
 
     pub fn dispatch(self: &Rc<Self>, message: &Msg) {
-        let old_model = self.current_model.borrow().clone();
+        let mut model = self.current_model.borrow().clone();
 
-        let new_model = (self.update)(message, old_model);
+        (self.update)(message, &mut model);
 
-        self.current_model.replace(new_model);
+        self.current_model.replace(model);
 
         self.render()
     }
