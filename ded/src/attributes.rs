@@ -33,8 +33,6 @@ pub fn class_list<Msg>(classes: &[(&str, bool)]) -> Attribute<Msg> {
         .map(|(name, _)| *name)
         .collect::<Vec<_>>();
 
-    console_log!("active: {:?}", active);
-
     // TODO: Change `class` to use Into<Cow> and use it here
     Attribute::Property("className", PropertyValue::String(active.join(" ")))
 }

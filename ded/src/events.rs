@@ -2,12 +2,12 @@ use std::rc::Rc;
 
 use wasm_bindgen::JsCast;
 
-use crate::html::Attribute;
+use crate::html::{Attribute, Callback};
 
 pub fn on_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     Attribute::Event {
         type_: "click".to_owned(),
-        to_message: Rc::new(move |_| Some(message.clone())),
+        to_message: Callback::new(Rc::new(move |_| Some(message.clone()))),
         stop_propagation: false,
         prevent_default: false,
     }
@@ -16,7 +16,7 @@ pub fn on_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
 pub fn on_double_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     Attribute::Event {
         type_: "dblclick".to_owned(),
-        to_message: Rc::new(move |_| Some(message.clone())),
+        to_message: Callback::new(Rc::new(move |_| Some(message.clone()))),
         stop_propagation: false,
         prevent_default: false,
     }
@@ -25,7 +25,7 @@ pub fn on_double_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
 pub fn on_blur<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     Attribute::Event {
         type_: "blur".to_owned(),
-        to_message: Rc::new(move |_| Some(message.clone())),
+        to_message: Callback::new(Rc::new(move |_| Some(message.clone()))),
         stop_propagation: false,
         prevent_default: false,
     }
@@ -35,7 +35,7 @@ pub fn on_blur<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
 pub fn on_input<Msg: 'static>(message: impl Fn(String) -> Msg + 'static + Clone) -> Attribute<Msg> {
     Attribute::Event {
         type_: "input".to_owned(),
-        to_message: Rc::new(move |event| {
+        to_message: Callback::new(Rc::new(move |event| {
             Some(message(
                 event
                     .target()
@@ -43,7 +43,7 @@ pub fn on_input<Msg: 'static>(message: impl Fn(String) -> Msg + 'static + Clone)
                     .map(|el| el.value())
                     .unwrap_or_default(),
             ))
-        }),
+        })),
         stop_propagation: true,
         prevent_default: false,
     }
@@ -52,7 +52,7 @@ pub fn on_input<Msg: 'static>(message: impl Fn(String) -> Msg + 'static + Clone)
 pub fn on_enter<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     Attribute::Event {
         type_: "keydown".to_owned(),
-        to_message: Rc::new(move |event| {
+        to_message: Callback::new(Rc::new(move |event| {
             let keycode = event
                 .dyn_into::<web_sys::KeyboardEvent>()
                 .ok()
@@ -63,7 +63,7 @@ pub fn on_enter<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
             } else {
                 None
             }
-        }),
+        })),
         prevent_default: false,
         stop_propagation: false,
     }

@@ -22,6 +22,7 @@ cfg_if! {
 
 #[wasm_bindgen]
 pub fn main() {
+    utils::set_panic_hook();
     let program = Rc::new(app::main());
     program.start();
     // mem::forget(program);

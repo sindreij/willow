@@ -19,13 +19,11 @@ fn init() -> Model {
     Model { counter: 4 }
 }
 
-fn update(msg: &Msg, mut model: Model) -> Model {
+fn update(msg: &Msg, model: &mut Model) {
     match msg {
         Msg::Increment => model.counter += 1,
         Msg::Decrement => model.counter -= 1,
     }
-
-    model
 }
 
 fn view(model: &Model) -> Html<Msg> {

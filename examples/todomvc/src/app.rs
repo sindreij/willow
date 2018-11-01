@@ -1,13 +1,17 @@
 use ded::{
     attributes::{
-        autofocus, checked, class, class_list, for_, id, name, placeholder, style, type_, value, hidden, href,
+        autofocus, checked, class, class_list, for_, hidden, href, id, name, placeholder, style,
+        type_, value,
     },
     events::{on_blur, on_click, on_double_click, on_enter, on_input},
-    html::{button, div, h1, header, input, label, li, section, text, ul, Html, footer, span, strong, a, p},
+    html::{
+        a, button, div, footer, h1, header, input, label, li, p, section, span, strong, text, ul,
+        Html,
+    },
     Program,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Msg {
     UpdateField(String),
     UpdateEntry(i32, String),
@@ -92,9 +96,7 @@ fn update(msg: &Msg, model: &mut Model) {
         Msg::ChangeVisibility(visibility) => {
             model.visibility = visibility.to_string();
         }
-        Msg::DeleteCompleted => {
-            model.entries.retain(|entry| !entry.completed)
-        }
+        Msg::DeleteCompleted => model.entries.retain(|entry| !entry.completed),
     }
 }
 
