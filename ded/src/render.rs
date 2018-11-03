@@ -223,12 +223,8 @@ where
     ) -> Result<(), JsValue> {
         match attribute {
             // TODO: I think I know why elm normalizes before adding and removing attributes. We should probably do the same
-            Attribute::Property(key, _) => {
-                Reflect::delete_property(node.as_ref(), &JsValue::from_str(&key))?;
-            }
-            Attribute::Style(property, _) => {
-                node.style().remove_property(property)?;
-            }
+            Attribute::Property(key, _) => {}
+            Attribute::Style(property, _) => {}
             Attribute::Event {
                 type_, to_message, ..
             } => {
@@ -250,16 +246,8 @@ where
 
     fn add_attribute(&self, node: &HtmlElement, attribute: &Attribute<Msg>) -> Result<(), JsValue> {
         match attribute {
-            Attribute::Property(key, value) => {
-                Reflect::set(
-                    node.as_ref(),
-                    &JsValue::from_str(&key),
-                    &property_value_to_json_value(value),
-                )?;
-            }
-            Attribute::Style(property, value) => {
-                node.style().set_property(property, value)?;
-            }
+            Attribute::Property(key, value) => {}
+            Attribute::Style(property, value) => {}
             Attribute::Event {
                 type_,
                 to_message,
@@ -302,12 +290,5 @@ where
         }
 
         Ok(())
-    }
-}
-
-fn property_value_to_json_value(val: &PropertyValue) -> JsValue {
-    match val {
-        PropertyValue::String(ref value) => JsValue::from_str(value),
-        PropertyValue::Bool(value) => JsValue::from_bool(*value),
     }
 }

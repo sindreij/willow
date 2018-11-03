@@ -1,19 +1,22 @@
 // TODO: Attributes
 // TODO: Are we able to convert Html<A> to Html<B>?
 
+use std::cell::RefCell;
 use std::cmp::PartialEq;
 use std::fmt::{self, Debug};
 use std::rc::Rc;
-use std::cell::RefCell;
 
-#[derive(Clone, Debug)]
+use wasm_bindgen::prelude::*;
+use web_sys::HtmlElement;
+
+#[derive(Debug)]
 pub struct HtmlTag<Msg> {
     pub tag: String,
-    pub attrs: Vec<Attribute<Msg>>,
+    pub attrs: Vec<Box<Attribute<Msg>>>,
     pub children: Vec<Html<Msg>>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum Html<Msg> {
     Tag(HtmlTag<Msg>),
     Text(String),
@@ -25,58 +28,64 @@ pub enum PropertyValue {
     Bool(bool),
 }
 
-#[derive(Clone)]
-pub struct Callback<Msg>{
-    pub closure: Rc<Fn(web_sys::Event) -> Option<Msg>>,
-    pub js_closure: Rc<RefCell<Option<wasm_bindgen::closure::Closure<Fn(web_sys::Event)>>>>,
+pub trait Attribute<Msg>: Debug + PartialEq {
+    fn add_to_node(&self, dispatch: Box<Fn(Msg)>, node: &HtmlElement) -> Result<(), JsValue>;
+    fn remove_from_node(&self, node: &HtmlElement) -> Result<(), JsValue>;
 }
 
-impl<Msg> Callback<Msg> {
-    pub fn new(inner: Rc<Fn(web_sys::Event) -> Option<Msg>>) -> Self {
-        Callback {
-            closure: inner,
-            js_closure: Rc::new(RefCell::new(None)),
-        }
-    }
-}
+// #[derive(Clone, Default)]
+// pub struct JsClosure(pub Rc<RefCell<Option<wasm_bindgen::closure::Closure<Fn(web_sys::Event)>>>>);
 
-impl<Msg> Debug for Callback<Msg> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "A CALLBACK")?;
-        if self.js_closure.borrow().is_some() {
-            write!(f, " (WITH CLOSURE)")?;
-        }
-        Ok(())
-    }
-}
+// impl Debug for JsClosure {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         if self.0.borrow().is_some() {
+//             write!(f, "HAS A CLOSURE")
+//         } else {
+//             write!(f, "NO CLOSURE")
+//         }
+//     }
+// }
 
-impl<Msg> PartialEq for Callback<Msg> {
-    fn eq(&self, _: &Callback<Msg>) -> bool {
-        // NOTE: This means we can not derive Eq, because a != a
-        false
-    }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub enum Attribute<Msg> {
-    Event {
-        type_: String,
-        to_message: Callback<Msg>,
-        stop_propagation: bool,
-        prevent_default: bool,
-    },
-    // TODO: Value should be JsValue or something like that, not String
-    Property(&'static str, PropertyValue),
-    Style(String, String),
-}
+// impl<Msg> PartialEq for JsClosure {
+//     fn eq(&self, other: &JsClosure) -> bool {
+//         // This is not good enough to implent Eq, i think
+//         // And its a bit weird. But it's to ignore this in the Attribute enum
+//         true
+//     }
+// }
+// #[derive(Clone, Debug, PartialEq)]
+// pub enum Attribute<Msg> {
+//     // Event where the message depends on the event data
+//     EventDyn {
+//         type_: String,
+//         to_message: fn(web_sys::Event) -> Option<Msg>,
+//         js_closure: JsClosure,
+//         stop_propagation: bool,
+//         prevent_default: bool,
+//     },
+//     // Event where the message is always the same
+//     Event {
+//         type_: String,
+//         message: Msg,
+//         js_closure: JsClosure,
+//         stop_propagation: bool,
+//         prevent_default: bool,
+//     },
+//     // TODO: Value should be JsValue or something like that, not String
+//     Property(&'static str, PropertyValue),
+//     Style(String, String),
+// }
 
 macro_rules! create_node {
     ($x:ident) => {
-        pub fn $x<Msg: Clone>(attrs: &[Attribute<Msg>], children: &[Html<Msg>]) -> Html<Msg> {
+        pub fn $x<Msg: Clone>(
+            attrs: Vec<Box<Attribute<Msg>>>,
+            children: Vec<Html<Msg>>,
+        ) -> Html<Msg> {
             Html::Tag(HtmlTag {
                 tag: stringify!($x).to_owned(),
-                children: children.to_vec(),
-                attrs: attrs.to_vec(),
+                children: children,
+                attrs: attrs,
             })
         }
     };
