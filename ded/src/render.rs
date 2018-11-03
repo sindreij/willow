@@ -19,6 +19,10 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
 ) -> Result<(), JsValue> {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
+    let performance = window
+        .performance()
+        .expect("should have performance on window");
+    let start_time = performance.now();
     // let body = document.body().expect("No Body");
     let parent = document
         .get_element_by_id("app")
@@ -30,11 +34,13 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
         document: document,
         program: program.clone(),
     };
-
     // console_log!("New Tree: \n{:#?}\n\nOld Tree: \n{:#?}", new_tree, old_tree);
 
     // TODO: We should probably not assume that the number here is 0
     renderer.update_element(&parent, Some(new_tree), old_tree.as_ref(), 0)?;
+
+    let end_time = performance.now();
+    console_log!("Rendering took {} ms", end_time - start_time);
 
     // let node = renderer.create_node(new_tree)?;
 
@@ -210,28 +216,29 @@ where
         }
     }
 
-    fn remove_attribute(&self, node: &HtmlElement, attribute: &Attribute<Msg>) -> Result<(), JsValue> {
+    fn remove_attribute(
+        &self,
+        node: &HtmlElement,
+        attribute: &Attribute<Msg>,
+    ) -> Result<(), JsValue> {
         match attribute {
             // TODO: I think I know why elm normalizes before adding and removing attributes. We should probably do the same
             Attribute::Property(key, _) => {
-                Reflect::delete_property(
-                    node.as_ref(),
-                    &JsValue::from_str(&key),
-                )?;
+                Reflect::delete_property(node.as_ref(), &JsValue::from_str(&key))?;
             }
             Attribute::Style(property, _) => {
                 node.style().remove_property(property)?;
             }
             Attribute::Event {
-                type_,
-                to_message,
-                ..
+                type_, to_message, ..
             } => {
                 let closure = to_message.js_closure.replace(None);
 
                 if let Some(closure) = closure {
-                    (node.as_ref() as &web_sys::EventTarget)
-                        .remove_event_listener_with_callback(&type_, closure.as_ref().unchecked_ref())?;
+                    (node.as_ref() as &web_sys::EventTarget).remove_event_listener_with_callback(
+                        &type_,
+                        closure.as_ref().unchecked_ref(),
+                    )?;
                 } else {
                     console_log!("WARN: Could not get a function to remove listener");
                 }
@@ -259,7 +266,7 @@ where
                 stop_propagation,
                 prevent_default,
             } => {
-                console_log!("Adding event {}", type_);
+                // console_log!("Adding event {}", type_);
                 let name_for_logging = type_.clone();
                 let to_message_fn = to_message.closure.clone();
                 let program = self.program.clone();

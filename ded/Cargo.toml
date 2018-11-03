@@ -28,4 +28,5 @@ features = [
   'KeyboardEvent',
   'MouseEvent',
   'CssStyleDeclaration',
+  'Performance'
 ]

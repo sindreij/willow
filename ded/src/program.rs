@@ -34,7 +34,7 @@ where
 
         (self.update)(message, &mut model);
 
-        console_log!("Model: {:?}", model);
+        // console_log!("Model: {:?}", model);
 
         self.current_model.replace(model);
 
