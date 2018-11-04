@@ -210,7 +210,7 @@ fn view_entry(todo: &Entry) -> Html<Msg> {
                     value(&todo.description),
                     name("title"),
                     id(&format!("todo-{}", todo.id.to_string())),
-                    on_input(move |val| Msg::UpdateEntry(todo_id, val)),
+                    // on_input(move |val| Msg::UpdateEntry(todo_id, val)),
                     on_blur(Msg::EditingEntry(todo.id, false)),
                     on_enter(Msg::EditingEntry(todo.id, false)),
                 ],

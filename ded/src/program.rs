@@ -44,7 +44,7 @@ where
     pub fn render(self: &Rc<Self>) {
         let tree = (self.view)(&self.current_model.borrow());
 
-        // console_log!("View: {:#?}", tree);
+        // console_log!("New view: {}", tree.to_html_text(0));
 
         if let Err(err) = render::render(self, &tree, &self.last_tree.borrow()) {
             console_log!("Got error: {:?}", err);

@@ -4,7 +4,7 @@ use ded::{
     Program,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Msg {
     Increment,
     Decrement,

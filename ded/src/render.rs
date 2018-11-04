@@ -8,7 +8,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{self, Document, HtmlElement, Node};
 
 use crate::{
-    html::{Attribute, Html, HtmlTag, PropertyValue},
+    html::{Attribute, EventToMessage, Html, HtmlTag, PropertyValue},
     program::Program,
 };
 
@@ -30,17 +30,19 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
 
     let parent: Node = parent.into();
 
-    let renderer = Renderer {
+    let mut renderer = Renderer {
         document: document,
         program: program.clone(),
+        to_remove: vec![],
     };
     // console_log!("New Tree: \n{:#?}\n\nOld Tree: \n{:#?}", new_tree, old_tree);
 
     // TODO: We should probably not assume that the number here is 0
     renderer.update_element(&parent, Some(new_tree), old_tree.as_ref(), 0)?;
+    renderer.remove_to_remove()?;
 
     let end_time = performance.now();
-    console_log!("Rendering took {} ms", end_time - start_time);
+    // console_log!("Rendering took {} ms", end_time - start_time);
 
     // let node = renderer.create_node(new_tree)?;
 
@@ -63,6 +65,7 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
 struct Renderer<Model, Msg> {
     document: Document,
     program: Rc<Program<Model, Msg>>,
+    to_remove: Vec<(Node, Node)>,
 }
 
 fn eiter_or_both_to_option_tuple<T>(pair: EitherOrBoth<T, T>) -> (Option<T>, Option<T>) {
@@ -90,7 +93,7 @@ where
     Model: Debug + Clone + 'static,
 {
     fn update_element(
-        &self,
+        &mut self,
         parent: &Node,
         new: Option<&Html<Msg>>,
         old: Option<&Html<Msg>>,
@@ -99,12 +102,22 @@ where
         match (old, new) {
             (None, Some(new_html)) => {
                 // Node is added
+                // console_log!("Adding node");
                 parent.append_child(&self.create_node(new_html)?)?;
             }
-            (Some(_), None) => {
+            (Some(removed), None) => {
+                // console_log!("Removing node");
                 // Node is removed
                 if let Some(child) = parent.child_nodes().item(index) {
-                    parent.remove_child(&child)?;
+                    // Don't remove childs until after every iteration is finished. If not, the
+                    // indexes will not point to the correct nodes anymore
+                    self.to_remove.push((parent.clone(), child));
+                } else {
+                    console_log!(
+                        "Could not find node with index {} when removing {}",
+                        index,
+                        removed.to_html_text(0)
+                    );
                 }
             }
             (Some(old), Some(new)) => match (old, new) {
@@ -118,12 +131,27 @@ where
                         // We start by removing the ones that are no longer active
                         for attr in &old_tag.attrs {
                             if !new_tag.attrs.contains(attr) {
+                                // console_log!("Removing attribute {:?}", attr);
                                 self.remove_attribute(&current_node, attr)?;
+                            }
+
+                            // Move closures over to the new events because we do not want them to be garbage collected
+                            if attr.is_event() {
+                                if let Some(new_attr) =
+                                    new_tag.attrs.iter().filter(|e| e == &attr).next()
+                                {
+                                    if let Some(js_closure) =
+                                        attr.get_js_closure().0.borrow_mut().take()
+                                    {
+                                        new_attr.set_js_closure(js_closure)
+                                    }
+                                }
                             }
                         }
                         // Then we add the ones that are added
                         for attr in &new_tag.attrs {
                             if !old_tag.attrs.contains(attr) {
+                                // console_log!("Adding attribute {:?}", attr);
                                 self.add_attribute(&current_node, attr)?;
                             }
                         }
@@ -152,6 +180,7 @@ where
                     }
                 }
                 (Html::Text(s1), Html::Text(s2)) => {
+                    // Only replace if the text is not the same
                     if s1 != s2 {
                         if let Some(child) = parent.child_nodes().item(index) {
                             parent.replace_child(&self.create_node(new)?, &child)?;
@@ -230,9 +259,9 @@ where
                 node.style().remove_property(property)?;
             }
             Attribute::Event {
-                type_, to_message, ..
+                type_, js_closure, ..
             } => {
-                let closure = to_message.js_closure.replace(None);
+                let closure = js_closure.0.replace(None);
 
                 if let Some(closure) = closure {
                     (node.as_ref() as &web_sys::EventTarget).remove_event_listener_with_callback(
@@ -265,10 +294,11 @@ where
                 to_message,
                 stop_propagation,
                 prevent_default,
+                js_closure,
             } => {
                 // console_log!("Adding event {}", type_);
                 let name_for_logging = type_.clone();
-                let to_message_fn = to_message.closure.clone();
+                let to_message = to_message.clone();
                 let program = self.program.clone();
                 let stop_propagation = *stop_propagation;
                 let prevent_default = *prevent_default;
@@ -279,11 +309,24 @@ where
                     if stop_propagation {
                         event.stop_propagation();
                     }
-                    let generated_message = to_message_fn(event);
-                    console_log!("On Event {}, {:?}!", name_for_logging, generated_message);
-                    if let Some(message) = generated_message {
-                        program.dispatch(&message);
-                    }
+                    match &to_message {
+                        EventToMessage::StaticMsg(msg) => program.dispatch(msg),
+                        EventToMessage::Input(msg_fn) => program.dispatch(&msg_fn(
+                            event
+                                .target()
+                                .and_then(|target| {
+                                    target.dyn_into::<web_sys::HtmlInputElement>().ok()
+                                })
+                                .map(|el| el.value())
+                                .unwrap_or_default(),
+                        )),
+                        EventToMessage::WithFilter { msg, filter } => {
+                            if filter(event) {
+                                program.dispatch(msg);
+                            }
+                        }
+                    };
+                    // console_log!("On Event {}!", name_for_logging);
                 }) as Box<Fn(_)>);
 
                 (node.as_ref() as &web_sys::EventTarget)
@@ -291,7 +334,7 @@ where
 
                 // Save the closure somewhere safe so that it will not be freed and invalidated
 
-                let ret = to_message.js_closure.replace(Some(closure));
+                let ret = js_closure.0.replace(Some(closure));
 
                 if ret.is_some() {
                     console_log!("to_message did already have a closure???");
@@ -301,6 +344,13 @@ where
             }
         }
 
+        Ok(())
+    }
+
+    fn remove_to_remove(&self) -> Result<(), JsValue> {
+        for (parent, child) in &self.to_remove {
+            parent.remove_child(&child)?;
+        }
         Ok(())
     }
 }
