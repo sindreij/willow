@@ -1,8 +1,10 @@
 use std::default::Default;
+use std::fmt::Debug;
+use std::rc::Rc;
 
 use wasm_bindgen::JsCast;
 
-use crate::html::{Attribute, EventToMessage};
+use crate::html::{Attribute, EventClosureImpl, EventToMessage, RcEventClosure};
 
 pub fn on_click<Msg: Clone + 'static>(message: Msg) -> Attribute<Msg> {
     Attribute::Event {
@@ -39,6 +41,22 @@ pub fn on_input<Msg: 'static>(message: fn(String) -> Msg) -> Attribute<Msg> {
     Attribute::Event {
         type_: "input".to_owned(),
         to_message: EventToMessage::Input(message),
+        stop_propagation: true,
+        prevent_default: false,
+        js_closure: Default::default(),
+    }
+}
+
+// TODO: Ensure that when we start using animationFrame, on_input gets special treatement
+pub fn on_input2<Msg: 'static + Debug, Data: Debug + Clone + PartialEq + 'static>(
+    data: Data,
+    message: fn(Data, String) -> Msg,
+) -> Attribute<Msg> {
+    Attribute::Event {
+        type_: "input".to_owned(),
+        to_message: EventToMessage::InputWithClosure(RcEventClosure(Rc::new(
+            EventClosureImpl::new(data, message),
+        ))),
         stop_propagation: true,
         prevent_default: false,
         js_closure: Default::default(),

@@ -3,7 +3,7 @@ use ded::{
         autofocus, checked, class, class_list, for_, hidden, href, id, name, placeholder, style,
         type_, value,
     },
-    events::{on_blur, on_click, on_double_click, on_enter, on_input},
+    events::{on_blur, on_click, on_double_click, on_enter, on_input, on_input2},
     html::{
         a, button, div, footer, h1, header, input, label, li, p, section, span, strong, text, ul,
         Html,
@@ -210,7 +210,7 @@ fn view_entry(todo: &Entry) -> Html<Msg> {
                     value(&todo.description),
                     name("title"),
                     id(&format!("todo-{}", todo.id.to_string())),
-                    // on_input(move |val| Msg::UpdateEntry(todo_id, val)),
+                    on_input2(todo_id, |todo_id, val| Msg::UpdateEntry(todo_id, val)),
                     on_blur(Msg::EditingEntry(todo.id, false)),
                     on_enter(Msg::EditingEntry(todo.id, false)),
                 ],

@@ -8,7 +8,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{self, Document, HtmlElement, Node};
 
 use crate::{
-    html::{Attribute, EventToMessage, Html, HtmlTag, PropertyValue},
+    html::{Attribute, EventClosure, EventToMessage, Html, HtmlTag, PropertyValue},
     program::Program,
 };
 
@@ -320,6 +320,17 @@ where
                                 .map(|el| el.value())
                                 .unwrap_or_default(),
                         )),
+                        EventToMessage::InputWithClosure(closure) => program.dispatch(
+                            &closure.0.call_ish(
+                                event
+                                    .target()
+                                    .and_then(|target| {
+                                        target.dyn_into::<web_sys::HtmlInputElement>().ok()
+                                    })
+                                    .map(|el| el.value())
+                                    .unwrap_or_default(),
+                            ),
+                        ),
                         EventToMessage::WithFilter { msg, filter } => {
                             if filter(event) {
                                 program.dispatch(msg);

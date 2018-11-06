@@ -1,6 +1,7 @@
 // TODO: Attributes
 // TODO: Are we able to convert Html<A> to Html<B>?
 
+use std::any::Any;
 use std::cell::RefCell;
 use std::cmp::PartialEq;
 use std::fmt::{self, Debug};
@@ -116,10 +117,55 @@ impl<Msg> Attribute<Msg> {
     }
 }
 
+pub trait EventClosure<Input, Msg>: Debug {
+    fn call_ish(&self, input: Input) -> Msg;
+    fn eq(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool;
+}
+
+#[derive(Debug)]
+pub struct EventClosureImpl<Input, Data, Msg> {
+    data: Data,
+    func: fn(Data, Input) -> Msg,
+}
+
+impl<Input, Data, Msg> EventClosureImpl<Input, Data, Msg> {
+    pub fn new(data: Data, func: fn(Data, Input) -> Msg) -> Self {
+        Self { data, func }
+    }
+}
+
+impl<Input: Debug + 'static, Data: PartialEq + Debug + Clone + 'static, Msg: Debug + 'static>
+    EventClosure<Input, Msg> for EventClosureImpl<Input, Data, Msg>
+{
+    fn call_ish(&self, input: Input) -> Msg {
+        (self.func)(self.data.clone(), input)
+    }
+
+    fn eq(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool {
+        let other = other as &Any;
+
+        if let Some(other_down) = other.downcast_ref::<EventClosureImpl<Input, Data, Msg>>() {
+            self.data == other_down.data && self.func == other_down.func
+        } else {
+            false
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct RcEventClosure<Input, Msg>(pub Rc<EventClosure<Input, Msg>>);
+
+impl<Input, Msg> PartialEq for RcEventClosure<Input, Msg> {
+    fn eq(&self, other: &RcEventClosure<Input, Msg>) -> bool {
+        self.eq(other)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum EventToMessage<Msg> {
     StaticMsg(Msg),
     Input(fn(String) -> Msg),
+    InputWithClosure(RcEventClosure<String, Msg>),
     WithFilter {
         msg: Msg,
         filter: fn(web_sys::Event) -> bool,
