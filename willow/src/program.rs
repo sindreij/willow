@@ -2,6 +2,8 @@ use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 
+use web_sys;
+
 use crate::{html::Html, render};
 
 pub struct Program<Model, Msg> {
@@ -32,7 +34,14 @@ where
     pub fn dispatch(self: &Rc<Self>, message: &Msg) {
         let mut model = self.current_model.borrow().clone();
 
+        let window = web_sys::window().expect("no global `window` exists");
+        let performance = window
+            .performance()
+            .expect("should have performance on window");
+        let start_time = performance.now();
         (self.update)(message, &mut model);
+        let end_time = performance.now();
+        console_log!("Update took {} ms", end_time - start_time);
 
         // console_log!("Model: {:?}", model);
 
@@ -46,9 +55,17 @@ where
 
         // console_log!("New view: {}", tree.to_html_text(0));
 
+        let window = web_sys::window().expect("no global `window` exists");
+        let performance = window
+            .performance()
+            .expect("should have performance on window");
+        let start_time = performance.now();
+
         if let Err(err) = render::render(self, &tree, &self.last_tree.borrow()) {
             console_log!("Got error: {:?}", err);
         }
+        let end_time = performance.now();
+        console_log!("Rendering took {} ms", end_time - start_time);
 
         self.last_tree.replace(Some(tree));
     }

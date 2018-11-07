@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-ded = {path="../../ded"}
+willow = {path="../../willow"}
 cfg-if = "0.1.2"
 wasm-bindgen = {version="0.2", features=["nightly"]}
 

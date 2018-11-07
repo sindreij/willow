@@ -1,4 +1,4 @@
-use ded::{
+use willow::{
     events::on_click,
     html::{button, div, text, Html},
     Program,

@@ -8,7 +8,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{self, Document, HtmlElement, Node};
 
 use crate::{
-    html::{Attribute, EventClosure, EventToMessage, Html, HtmlTag, PropertyValue},
+    html::{Attribute, EventToMessage, Html, HtmlTag, PropertyValue},
     program::Program,
 };
 
@@ -19,10 +19,6 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
 ) -> Result<(), JsValue> {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
-    let performance = window
-        .performance()
-        .expect("should have performance on window");
-    let start_time = performance.now();
     // let body = document.body().expect("No Body");
     let parent = document
         .get_element_by_id("app")
@@ -40,9 +36,6 @@ pub fn render<Msg: PartialEq + Debug + Clone + 'static, Model: Debug + Clone + '
     // TODO: We should probably not assume that the number here is 0
     renderer.update_element(&parent, Some(new_tree), old_tree.as_ref(), 0)?;
     renderer.remove_to_remove()?;
-
-    let end_time = performance.now();
-    // console_log!("Rendering took {} ms", end_time - start_time);
 
     // let node = renderer.create_node(new_tree)?;
 

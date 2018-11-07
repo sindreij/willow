@@ -119,7 +119,7 @@ impl<Msg> Attribute<Msg> {
 
 pub trait EventClosure<Input, Msg>: Debug {
     fn call_ish(&self, input: Input) -> Msg;
-    fn eq(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool;
+    fn eq_rc(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool;
 }
 
 #[derive(Debug)]
@@ -141,7 +141,7 @@ impl<Input: Debug + 'static, Data: PartialEq + Debug + Clone + 'static, Msg: Deb
         (self.func)(self.data.clone(), input)
     }
 
-    fn eq(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool {
+    fn eq_rc(&self, other: &Rc<EventClosure<Input, Msg>>) -> bool {
         let other = other as &Any;
 
         if let Some(other_down) = other.downcast_ref::<EventClosureImpl<Input, Data, Msg>>() {
@@ -157,7 +157,7 @@ pub struct RcEventClosure<Input, Msg>(pub Rc<EventClosure<Input, Msg>>);
 
 impl<Input, Msg> PartialEq for RcEventClosure<Input, Msg> {
     fn eq(&self, other: &RcEventClosure<Input, Msg>) -> bool {
-        self.eq(other)
+        self.0.eq_rc(&other.0)
     }
 }
 

@@ -1,12 +1,12 @@
 [workspace]
 members = [
-    "ded",
+    "willow",
     "examples/counter",
     "examples/todomvc",
 ]
 
 [replace]
-# "ded:0.1.0" = {path = "ded"}
+# "willow:0.1.0" = {path = "willow"}
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
