@@ -1,8 +1,13 @@
 #![feature(arbitrary_self_types)]
 
+extern crate serde;
+extern crate serde_derive;
+extern crate serde_json;
+
 mod app;
 #[macro_use]
 mod utils;
+mod storage;
 
 // use std::mem;
 use std::rc::Rc;

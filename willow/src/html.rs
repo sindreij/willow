@@ -14,10 +14,40 @@ pub struct HtmlTag<Msg> {
     pub children: Vec<Html<Msg>>,
 }
 
+impl<Msg> HtmlTag<Msg> {
+    pub fn key(&self) -> Option<&str> {
+        for attr in &self.attrs {
+            if let Attribute::Key(ref key) = attr {
+                return Some(key);
+            }
+        }
+        None
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Html<Msg> {
     Tag(HtmlTag<Msg>),
     Text(String),
+}
+
+impl<Msg> HtmlTag<Msg> {
+    pub fn to_html_text(&self, indent: u32) -> String {
+        let indent_s = "  ".repeat(indent as usize);
+        if self.children.is_empty() {
+            return format!("{}<{} />", indent_s, self.tag);
+        }
+        let children = self
+            .children
+            .iter()
+            .map(|child| child.to_html_text(indent + 1))
+            .collect::<Vec<_>>()
+            .join("\n");;
+        format!(
+            "{}<{}>\n{}\n{}</{}>",
+            indent_s, self.tag, children, indent_s, self.tag,
+        )
+    }
 }
 
 impl<Msg> Html<Msg> {
@@ -25,21 +55,7 @@ impl<Msg> Html<Msg> {
         let indent_s = "  ".repeat(indent as usize);
         match self {
             Html::Text(text) => format!("{}{}", indent_s, text),
-            Html::Tag(tag) => {
-                if tag.children.is_empty() {
-                    return format!("{}<{} />", indent_s, tag.tag);
-                }
-                let children = tag
-                    .children
-                    .iter()
-                    .map(|child| child.to_html_text(indent + 1))
-                    .collect::<Vec<_>>()
-                    .join("\n");;
-                format!(
-                    "{}<{}>\n{}\n{}</{}>",
-                    indent_s, tag.tag, children, indent_s, tag.tag,
-                )
-            }
+            Html::Tag(tag) => tag.to_html_text(indent),
         }
     }
 }
@@ -84,6 +100,7 @@ pub enum Attribute<Msg> {
     // TODO: Value should be JsValue or something like that, not String
     Property(&'static str, PropertyValue),
     Style(String, String),
+    Key(String),
 }
 
 impl<Msg> Attribute<Msg> {

@@ -114,7 +114,14 @@ where
                 }
             }
             (Some(old), Some(new)) => match (old, new) {
-                (Html::Tag(old_tag), Html::Tag(new_tag)) if old_tag.tag == new_tag.tag => {
+                (Html::Tag(old_tag), Html::Tag(new_tag))
+                    if old_tag.tag == new_tag.tag && old_tag.key() == new_tag.key() =>
+                {
+                    // console_log!(
+                    //     "Updating {} to {}",
+                    //     old_tag.to_html_text(0),
+                    //     new_tag.to_html_text(0)
+                    // );
                     if let Some(current_node) = parent.child_nodes().item(index) {
                         let current_node: HtmlElement = current_node.dyn_into()?;
                         // We have a node (current_node) that has changed from old_tag to new_tag, though
@@ -214,6 +221,7 @@ where
                 tag,
                 attrs,
                 children,
+                ..
             }) => {
                 let val: HtmlElement = self.document.create_element(&tag)?.dyn_into()?;
 
@@ -244,6 +252,7 @@ where
         attribute: &Attribute<Msg>,
     ) -> Result<(), JsValue> {
         match attribute {
+            Attribute::Key(_) => {}
             // TODO: I think I know why elm normalizes before adding and removing attributes. We should probably do the same
             Attribute::Property(key, _) => {
                 Reflect::delete_property(node.as_ref(), &JsValue::from_str(&key))?;
@@ -272,6 +281,7 @@ where
 
     fn add_attribute(&self, node: &HtmlElement, attribute: &Attribute<Msg>) -> Result<(), JsValue> {
         match attribute {
+            Attribute::Key(_) => {}
             Attribute::Property(key, value) => {
                 Reflect::set(
                     node.as_ref(),
@@ -290,7 +300,7 @@ where
                 js_closure,
             } => {
                 // console_log!("Adding event {}", type_);
-                let name_for_logging = type_.clone();
+                // let name_for_logging = type_.clone();
                 let to_message = to_message.clone();
                 let program = self.program.clone();
                 let stop_propagation = *stop_propagation;

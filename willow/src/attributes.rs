@@ -37,6 +37,10 @@ pub fn class_list<Msg>(classes: &[(&str, bool)]) -> Attribute<Msg> {
     Attribute::Property("className", PropertyValue::String(active.join(" ")))
 }
 
+pub fn key<Msg>(key: String) -> Attribute<Msg> {
+    Attribute::Key(key)
+}
+
 string_property!(placeholder);
 string_property!(name);
 string_property!(value);

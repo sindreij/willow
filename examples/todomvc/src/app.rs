@@ -1,15 +1,19 @@
+use serde_derive::{Deserialize, Serialize};
+
 use willow::{
     attributes::{
-        autofocus, checked, class, class_list, for_, hidden, href, id, name, placeholder, style,
-        type_, value,
+        autofocus, checked, class, class_list, for_, hidden, href, id, key, name, placeholder,
+        style, type_, value,
     },
     events::{on_blur, on_click, on_double_click, on_enter, on_input, on_input2},
     html::{
         a, button, div, footer, h1, header, input, label, li, p, section, span, strong, text, ul,
         Html,
     },
-    Program,
+    Cmd, Program,
 };
+
+use crate::storage::{self, SetStorage};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Msg {
@@ -24,7 +28,7 @@ pub enum Msg {
     DeleteCompleted,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Model {
     entries: Vec<Entry>,
     field: String,
@@ -32,7 +36,7 @@ pub struct Model {
     visibility: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Entry {
     description: String,
     completed: bool,
@@ -41,15 +45,17 @@ pub struct Entry {
 }
 
 fn init() -> Model {
-    Model {
-        entries: vec![],
-        visibility: "All".to_string(),
-        field: "".to_string(),
-        uid: 0,
-    }
+    storage::get_model()
+
+    // Model {
+    //     entries,
+    //     visibility: "All".to_string(),
+    //     field: "".to_string(),
+    //     uid: 0,
+    // }
 }
 
-fn update(msg: &Msg, model: &mut Model) {
+fn update(msg: &Msg, model: &mut Model) -> Box<Cmd<Msg>> {
     match msg {
         Msg::UpdateField(val) => model.field = val.to_owned(),
         Msg::Add => {
@@ -97,7 +103,8 @@ fn update(msg: &Msg, model: &mut Model) {
             model.visibility = visibility.to_string();
         }
         Msg::DeleteCompleted => model.entries.retain(|entry| !entry.completed),
-    }
+    };
+    Box::new(SetStorage(model.clone()))
 }
 
 fn view(model: &Model) -> Html<Msg> {
@@ -178,12 +185,11 @@ fn view_entries(visibility: &String, entries: &Vec<Entry>) -> Html<Msg> {
 }
 
 fn view_entry(todo: &Entry) -> Html<Msg> {
-    let todo_id = todo.id;
     li(
-        &[class_list(&[
-            ("completed", todo.completed),
-            ("editing", todo.editing),
-        ])],
+        &[
+            key(todo.id.to_string()),
+            class_list(&[("completed", todo.completed), ("editing", todo.editing)]),
+        ],
         &[
             div(
                 &[class("view")],
@@ -210,7 +216,7 @@ fn view_entry(todo: &Entry) -> Html<Msg> {
                     value(&todo.description),
                     name("title"),
                     id(&format!("todo-{}", todo.id.to_string())),
-                    on_input2(todo_id, |todo_id, val| Msg::UpdateEntry(todo_id, val)),
+                    on_input2(todo.id, |todo_id, val| Msg::UpdateEntry(todo_id, val)),
                     on_blur(Msg::EditingEntry(todo.id, false)),
                     on_enter(Msg::EditingEntry(todo.id, false)),
                 ],

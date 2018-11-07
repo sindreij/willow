@@ -4,11 +4,11 @@ use std::rc::Rc;
 
 use web_sys;
 
-use crate::{html::Html, render};
+use crate::{html::Html, render, Cmd};
 
 pub struct Program<Model, Msg> {
     pub view: Box<Fn(&Model) -> Html<Msg>>,
-    pub update: Box<Fn(&Msg, &mut Model)>,
+    pub update: Box<Fn(&Msg, &mut Model) -> Box<Cmd<Msg>>>,
     pub current_model: RefCell<Model>,
     pub last_tree: RefCell<Option<Html<Msg>>>,
 }
@@ -21,7 +21,7 @@ where
     pub fn new<ViewFn, UpdateFn>(view: ViewFn, update: UpdateFn, initial: Model) -> Self
     where
         ViewFn: Fn(&Model) -> Html<Msg> + 'static,
-        UpdateFn: Fn(&Msg, &mut Model) + 'static,
+        UpdateFn: Fn(&Msg, &mut Model) -> Box<Cmd<Msg>> + 'static,
     {
         Self {
             view: Box::new(view),
@@ -39,7 +39,7 @@ where
             .performance()
             .expect("should have performance on window");
         let start_time = performance.now();
-        (self.update)(message, &mut model);
+        let cmd = (self.update)(message, &mut model);
         let end_time = performance.now();
         console_log!("Update took {} ms", end_time - start_time);
 
@@ -47,7 +47,11 @@ where
 
         self.current_model.replace(model);
 
-        self.render()
+        self.render();
+
+        if let Err(err) = cmd.run() {
+            console_log!("Got error running cmd: {:?}", err);
+        }
     }
 
     pub fn render(self: &Rc<Self>) {
