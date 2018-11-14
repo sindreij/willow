@@ -1,4 +1,3 @@
-// TODO: Attributes
 // TODO: Are we able to convert Html<A> to Html<B>?
 
 use std::any::Any;
