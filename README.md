@@ -2,8 +2,10 @@
 
 This is an experiment to see if it is possible to create a "elm-like" API using Rust.
 
-There are two examples of apps, a basic: [counter](examples/counter/src/app.rs) and the more involved
-[todomvc](examples/todomvc/src/app.rs).
+## Demo / Examples
+
+- Counter [source code](examples/counter/src/app.rs). [Demo](http://sindrejohansen.no/willow/counter/)
+- TodoMVC [source code](examples/todomvc/src/app.rs). [Demo](http://sindrejohansen.no/willow/todomvc/)
 
 ## Quickstart
 
@@ -111,7 +113,7 @@ pub fn main() -> Program<Model, Msg> {
 ```
 
 This is compilable Rust code, and using this project it will render and run exactly the
-same as the Elm code. You can try it here (TODO)
+same as the Elm code. You can try it [here](http://sindrejohansen.no/willow/counter/)
 
 Note how much the rust code resembles the Elm code. The `Msg` is translated from a Elm `type`
 to a Rust `enum`, but apart from having different names and syntax its exactly the same. The
