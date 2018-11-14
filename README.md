@@ -2,6 +2,9 @@
 
 This is an experiment to see if it is possible to create a "elm-like" API using Rust.
 
+There are two examples of apps, a basic: [counter](examples/counter/src/app.rs) and the more involved
+[todomvc](examples/todomvc/src/app.rs).
+
 ## Quickstart
 
 ```
@@ -116,3 +119,27 @@ no built in support for immutable structures, so instead we mutate the model.
 Rust's powerful borrow system means that we can control where the model is mutable, meaning that we can only
 change it here in the update-function, and not for example in the view-function. Therefore
 I think using mutations here will not mean that we are less safe than in Elm code.
+
+At last we have the main function, which returns a `Program<Model, Msg>`. Exactly the same as
+the `Program () model msg` returned from the main function in the elm app. It's interesting
+how much we can use the same types in Elm and Rust.
+
+## Implementation
+
+After having formulated the idea and written up some code, I started on the implementation. The
+first iteration just rendered the Html in the DOM. I then added events and messages and needed to update
+the DOM. The first "virtual diffing" just deleted the whole DOM and recreated it with the new
+Html, but I latter added a "real" dom-diffing algorithm.
+
+It's really great that all of this is possible writing no lines of javascript-code, thanks to
+the [web-sys](https://crates.io/crates/web-sys) and [js-sys](https://crates.io/crates/js-sys)
+crates, which builds on [https://crates.io/crates/wasm-bindgen](wasm-bindgen).
+
+All this is enough to render the TodoMVC application, but doing anything more than that will probably
+mean things are missing. One notable detail is a function `Html<A> => Html<B>` like elm's
+[Html.map](https://package.elm-lang.org/packages/elm/html/latest/Html#map).
+
+All in all this is just an experiment to see how far Rust has come in doing web development. I hope
+it will inspire someone to create the next awesome web-framework.
+
+I have written two examples, [counter](examples/counter/src/app.rs) (the code above) and [todomvc](examples/todomvc/src/app.rs).
