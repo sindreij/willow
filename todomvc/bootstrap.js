@@ -58,17 +58,17 @@
 /******/ 					"__wbindgen_object_drop_ref": function(p0i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_object_drop_ref"](p0i32);
 /******/ 					},
-/******/ 					"__wbindgen_string_new": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
-/******/ 					},
 /******/ 					"__wbindgen_cb_drop": function(p0i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_cb_drop"](p0i32);
+/******/ 					},
+/******/ 					"__wbindgen_string_new": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_string_new"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbg_error_cc95a3d302735ca3": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbg_error_cc95a3d302735ca3"](p0i32,p1i32);
 /******/ 					},
-/******/ 					"__wbg_log_3415aec3cd45961d": function(p0i32,p1i32) {
-/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbg_log_3415aec3cd45961d"](p0i32,p1i32);
+/******/ 					"__wbg_log_70b92d5e4865cbf9": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbg_log_70b92d5e4865cbf9"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__widl_instanceof_Window": function(p0i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_instanceof_Window"](p0i32);
@@ -142,8 +142,23 @@
 /******/ 					"__widl_f_item_NodeList": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_item_NodeList"](p0i32,p1i32);
 /******/ 					},
+/******/ 					"__widl_f_now_Performance": function(p0i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_now_Performance"](p0i32);
+/******/ 					},
+/******/ 					"__widl_f_get_item_Storage": function(p0i32,p1i32,p2i32,p3i32,p4i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_get_item_Storage"](p0i32,p1i32,p2i32,p3i32,p4i32);
+/******/ 					},
+/******/ 					"__widl_f_set_item_Storage": function(p0i32,p1i32,p2i32,p3i32,p4i32,p5i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_set_item_Storage"](p0i32,p1i32,p2i32,p3i32,p4i32,p5i32);
+/******/ 					},
 /******/ 					"__widl_f_document_Window": function(p0i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_document_Window"](p0i32);
+/******/ 					},
+/******/ 					"__widl_f_performance_Window": function(p0i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_performance_Window"](p0i32);
+/******/ 					},
+/******/ 					"__widl_f_local_storage_Window": function(p0i32,p1i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__widl_f_local_storage_Window"](p0i32,p1i32);
 /******/ 					},
 /******/ 					"__wbg_newnoargs_b5dbe629f3c72f37": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbg_newnoargs_b5dbe629f3c72f37"](p0i32,p1i32);
@@ -181,8 +196,8 @@
 /******/ 					"__wbindgen_throw": function(p0i32,p1i32) {
 /******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_throw"](p0i32,p1i32);
 /******/ 					},
-/******/ 					"__wbindgen_closure_wrapper161": function(p0i32,p1i32,p2i32,p3i32,p4i32) {
-/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_closure_wrapper161"](p0i32,p1i32,p2i32,p3i32,p4i32);
+/******/ 					"__wbindgen_closure_wrapper70": function(p0i32,p1i32,p2i32,p3i32,p4i32) {
+/******/ 						return installedModules["../pkg/example_todomvc.js"].exports["__wbindgen_closure_wrapper70"](p0i32,p1i32,p2i32,p3i32,p4i32);
 /******/ 					}
 /******/ 				}
 /******/ 			};
@@ -283,7 +298,7 @@
 /******/ 				promises.push(installedWasmModuleData);
 /******/ 			else {
 /******/ 				var importObject = wasmImportObjects[wasmModuleId]();
-/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/example_todomvc_bg.wasm":"9aa00d1bf7899e14f27c"}[wasmModuleId] + ".module.wasm");
+/******/ 				var req = fetch(__webpack_require__.p + "" + {"../pkg/example_todomvc_bg.wasm":"74634d001220d3b4d3b7"}[wasmModuleId] + ".module.wasm");
 /******/ 				var promise;
 /******/ 				if(importObject instanceof Promise && typeof WebAssembly.compileStreaming === 'function') {
 /******/ 					promise = Promise.all([WebAssembly.compileStreaming(req), importObject]).then(function(items) {
