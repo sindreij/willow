@@ -1,7 +1,8 @@
 use willow::{
+    cmd,
     events::on_click,
     html::{button, div, text, Html},
-    Program,
+    Cmd, Program,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,11 +20,12 @@ fn init() -> Model {
     Model { counter: 4 }
 }
 
-fn update(msg: &Msg, model: &mut Model) {
+fn update(msg: &Msg, model: &mut Model) -> Box<Cmd<Msg>> {
     match msg {
         Msg::Increment => model.counter += 1,
         Msg::Decrement => model.counter -= 1,
     }
+    Box::new(cmd::None)
 }
 
 fn view(model: &Model) -> Html<Msg> {
