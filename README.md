@@ -143,3 +143,19 @@ All in all this is just an experiment to see how far Rust has come in doing web 
 it will inspire someone to create the next awesome web-framework.
 
 I have written two examples, [counter](examples/counter/src/app.rs) (the code above) and [todomvc](examples/todomvc/src/app.rs).
+TodoMVC is manually converted from Evan's [elm-todomvc](https://github.com/evancz/elm-todomvc).
+
+## License
+
+Licensed under either of these:
+
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
+  https://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or
+  https://opensource.org/licenses/MIT)
+
+### Contributing
+
+Unless you explicitly state otherwise, any contribution you intentionally submit
+for inclusion in the work, as defined in the Apache-2.0 license, shall be
+dual-licensed as above, without any additional terms or conditions.

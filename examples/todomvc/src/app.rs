@@ -1,3 +1,6 @@
+// The code below is converted from https://github.com/evancz/elm-todomvc. The latter is
+// Copyright (c) 2014-2016, Evan Czaplicki
+
 use serde_derive::{Deserialize, Serialize};
 
 use willow::{

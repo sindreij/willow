@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Hello elm",
   "main": "index.js",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bin": {
     "create-wasm-app": ".bin/create-wasm-app.js"
   },
