@@ -24,7 +24,7 @@ yarn start
 
 ## Backstory
 
-I really like Elm. It's an amacing language/ecosystem and absolutely love how delightful the language is to use.
+I really like Elm. It's an amazing language/ecosystem and absolutely love how delightful the language is to use.
 It has an interesting architecture called TEA, the Elm architecture. Its how you use Elm to create an app. TEA
 and Elm are not separable, you can't have one thing without the other. And that makes it a pleasure to use. TEA
 has also been an inspiration for how Redux is used to handle state in the React ecosystem.
@@ -40,7 +40,7 @@ be for the frontend and the latter will be for the backend.
 Until recently.
 
 There is something brewing, called WebAssembly, or wasm for short. It's a compile target which make it possible to run
-Rust (and C and C++ and lots of more lanuages) in the browser. Rust has support for compiling to wasm for a while, but in the last few months
+Rust (and C and C++ and lots of more lanuages) in the browser. Rust has had support for compiling to wasm for a while, but in the last few months
 the support have become really great, the Rust team has created some amazing tools which has made using Rust with wasm a breeze.
 
 ## The idea
@@ -74,7 +74,7 @@ main =
 
 So what is happening here. We have a `Msg` which is the action type in Elm. Each event in Elm creates one such
 Message. Then we have the `update` function which takes in a message and a model and returns the new model.
-We have a `view` function which takes a model and return the html to render. At the end we have a main which connects
+We have a `view` function which takes a model and returns the html to render. At the end we have a `main`-function which connects
 everything.
 
 If we try to translate this to Rust, it will become something like:
@@ -118,13 +118,13 @@ same as the Elm code. You can try it [here](http://sindrejohansen.no/willow/coun
 Note how much the rust code resembles the Elm code. The `Msg` is translated from a Elm `type`
 to a Rust `enum`, but apart from having different names and syntax its exactly the same. The
 `Model` is becoming a Rust struct. The largest change is in the `update` function. Rust has
-no built in support for immutable structures, so instead we mutate the model.
+no built-in support for immutable structures, so instead we mutate the model.
 
 Rust's powerful borrow system means that we can control where the model is mutable, meaning that we can only
 change it here in the update-function, and not for example in the view-function. Therefore
 I think using mutations here will not mean that we are less safe than in Elm code.
 
-At last we have the main function, which returns a `Program<Model, Msg>`. Exactly the same as
+Last we have the main function, which returns a `Program<Model, Msg>`. Exactly the same as
 the `Program () model msg` returned from the main function in the Elm app. It's interesting
 to what degree the types work out to look the same.
 
