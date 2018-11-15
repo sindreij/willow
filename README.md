@@ -26,10 +26,11 @@ yarn start
 
 I really like Elm. It is a delightful language with an amazing ecosystem. It
 has an interesting architecture called TEA, The Elm Architecture. TEA and Elm
-are not separable, you can't have one thing without the other. And that makes it a pleasure to use. TEA
-has also been an inspiration for how Redux is used to handle state in the React ecosystem.
+are not separable, you can't have one thing without the other. And that makes
+it a pleasure to use. TEA has also been an inspiration for how Redux is used to
+handle state in the React ecosystem.
 
-Another language I like is Rust. On the paper it's a completely different beast than Elm, but
+Another language I like is Rust. On paper, it's a completely different beast than Elm, but
 in using them both I have seen some resemblance. They both have great type systems which makes it easier
 to refactor and gives few runtime exceptions. They have similar support for tagged unions and pattern matching.
 They both handle errors using the sum-type `Result`. It's easy to see how they are inspired by the same languages.
