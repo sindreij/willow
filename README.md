@@ -30,24 +30,30 @@ are not separable, you can't have one thing without the other. And that makes
 it a pleasure to use. TEA has also been an inspiration for how Redux is used to
 handle state in the React ecosystem.
 
-Another language I like is Rust. On paper, it's a completely different beast than Elm, but
-in using them both I have seen some resemblance. They both have great type systems which makes it easier
-to refactor and gives few runtime exceptions. They have similar support for tagged unions and pattern matching.
-They both handle errors using the sum-type `Result`. It's easy to see how they are inspired by the same languages.
+Another language I like is Rust. On paper, Rust is completely different from
+Elm, but in using them both, I have seen some resemblance. They both have great
+type systems that makes it easier to refactor, and gives few runtime exceptions.
+They have similar support for tagged unions and pattern matching. They both
+handle errors using the sum-type `Result`. It's easy to see how they are
+inspired by the same languages.
 
-The big difference is that Elm compiles to JS and Rust compiles to machine code. Which means that the former will
-be for the frontend and the latter will be for the backend.
+The big difference is that Elm compiles to JS and Rust compiles to machine code.
+Which means that the former will be for the frontend and the latter will be for
+the backend.
 
 Until recently.
 
-There is something brewing, called WebAssembly, or wasm for short. It's a compile target which make it possible to run
-Rust (and C and C++ and lots of more lanuages) in the browser. Rust has support for compiling to wasm for a while, but in the last few months
-the support have become really great, the Rust team has created some amazing tools which has made using Rust with wasm a breeze.
+There is something brewing, called WebAssembly, or wasm for short. It is a
+compile target that makes it possible to run Rust (and C and C++ and lots of
+more lanuages) in the browser. Rust has had support for compiling to wasm for a
+ while, but in the last few months the support has become really great, the
+ Rust team has created some amazing tools that makes using Rust with wasm a
+ breeze.
 
 ## The idea
 
-Having used both Elm and Rust I had something I wanted to try. Would it be possible to create The Elm Architecture in
-Rust?
+Having used both Elm and Rust I had something I wanted to try. Would it be
+possible to create The Elm Architecture in Rust?
 
 This is a basic Elm app (excluding the imports):
 
@@ -73,10 +79,11 @@ main =
   Browser.sandbox { init = 0, update = update, view = view }
 ```
 
-So what is happening here. We have a `Msg` which is the action type in Elm. Each event in Elm creates one such
-Message. Then we have the `update` function which takes in a message and a model and returns the new model.
-We have a `view` function which takes a model and return the html to render. At the end we have a main which connects
-everything.
+So what is happening here? We have a `Msg` which is the action type in Elm.
+Each event in Elm creates one such Message. Then we have the `update` function
+which takes in a message and a model and returns the new model. We have a
+`view` function which takes a model and return the html to render. At the end
+we have a `main` that connects everything.
 
 If we try to translate this to Rust, it will become something like:
 
