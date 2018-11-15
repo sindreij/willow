@@ -24,9 +24,9 @@ yarn start
 
 ## Backstory
 
-I really like Elm. It is a delightful language with an amazing ecosystem.
-It has an interesting architecture called TEA, The Elm Architecture. Its how you use Elm to create an app. TEA
-and Elm are not separable, you can't have one thing without the other. And that makes it a pleasure to use. TEA
+I really like Elm. It is a delightful language with an amazing ecosystem. It
+has an interesting architecture called TEA, The Elm Architecture. TEA and Elm
+are not separable, you can't have one thing without the other. And that makes it a pleasure to use. TEA
 has also been an inspiration for how Redux is used to handle state in the React ecosystem.
 
 Another language I like is Rust. On the paper it's a completely different beast than Elm, but
