@@ -9,7 +9,7 @@ This is an experiment to see if it is possible to create a "elm-like" API using 
 
 ## Quickstart
 
-```
+```sh
 cd examples/counter/
 
 # See https://github.com/rustwasm/wasm-pack/issues/252
