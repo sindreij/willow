@@ -1,6 +1,6 @@
 # Willow
 
-This is an experiment to see if it is possible to create a "elm-like" API using Rust.
+**Willow** is an experiment to see if it is possible to create a "elm-like" API using Rust.
 
 ## Demo / Examples
 
