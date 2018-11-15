@@ -143,7 +143,7 @@ first iteration just rendered the Html in the DOM. I then added events and messa
 the DOM. The first "virtual diffing" just deleted the whole DOM and recreated it with the new
 Html, but I latter added a "real" dom-diffing algorithm.
 
-Writing this is possible writing no lines of javascript-code, thanks to
+Writing this is possible without writing any javascript-code, thanks to
 the [web-sys](https://crates.io/crates/web-sys) and [js-sys](https://crates.io/crates/js-sys)
 crates, which builds on [https://crates.io/crates/wasm-bindgen](wasm-bindgen).
 
