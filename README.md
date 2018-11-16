@@ -143,13 +143,18 @@ All this is enough to render the TodoMVC application, but doing anything more th
 mean you will miss something. For example a function `Html<A> => Html<B>` like Elm's
 [Html.map](https://package.elm-lang.org/packages/elm/html/latest/Html#map).
 
+## Conclusion
+
 All in all this is just an experiment to see how far Rust has come in doing web development.
 I think the above shows it has come really far. I hope it will inspire someone to create the
 next awesome web-framework using Rust, and that I one day can use Rust to write webapps in
 my day-job.
 
-I have written two examples, [counter](examples/counter/src/app.rs) (the code above) and [todomvc](examples/todomvc/src/app.rs).
+I have written two examples, [counter](https://github.com/sindreij/willow/blob/master/examples/counter/src/app.rs) (the code above) and [todomvc](https://github.com/sindreij/willow/blob/master/examples/todomvc/src/app.rs).
 TodoMVC is manually converted from Evan's [elm-todomvc](https://github.com/evancz/elm-todomvc).
+
+If you found a spelling mistake, feel free to correct it
+[here](https://github.com/sindreij/blog/blob/gh-pages/_posts/2018-11-14-willow-elm-in-rust.md)
 
 ## License
 
