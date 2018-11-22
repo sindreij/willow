@@ -24,7 +24,7 @@ yarn start
 
 ## Backstory
 
-[Se my blogpost for the how and why I built this.](https://sindrejohansen.no/blog/willow/rust/elm/2018/11/14/willow-elm-in-rust.html)
+[See my blogpost for the how and why I built this.](https://sindrejohansen.no/blog/willow/rust/elm/2018/11/16/willow-elm-in-rust.html)
 
 ## License
 
