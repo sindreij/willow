@@ -1,3 +1,5 @@
+**This is a tech-demo. Feel free to learn from it and steal the ideas (if you like them), but it's not something that should (or can) be used directly**
+
 # Willow
 
 **Willow** is an experiment to see if it is possible to create a "elm-like" API using Rust.
